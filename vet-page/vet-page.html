@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nirmay - Veterinary Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .page { display: none; }
+        .page.active { display: block; }
+        .alert-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .locked-medicine {
+            background: linear-gradient(45deg, #fee2e2 25%, transparent 25%), 
+                        linear-gradient(-45deg, #fee2e2 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #fee2e2 75%), 
+                        linear-gradient(-45deg, transparent 75%, #fee2e2 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-green-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg"><img src="farmerimage.png" alt="Nirmay"></span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800">Nirmay</h1>
+                </div>
+                <div class="flex space-x-1">
+                    <button onclick="showPage('dashboard')" class="nav-btn px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white">Dashboard</button>
+                    <button onclick="showPage('reports')" class="nav-btn px-4 py-2 rounded-lg font-medium transition-colors text-gray-600 hover:bg-gray-100">Reports & Alerts</button>
+                    <button onclick="showPage('communication')" class="nav-btn px-4 py-2 rounded-lg font-medium transition-colors text-gray-600 hover:bg-gray-100">Communication & Control</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page 1: Dashboard -->
+    <div id="dashboard" class="page active">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Veterinary Dashboard</h1>
+
+            <!-- Alert Banner -->
+            <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-8 alert-pulse">
+                <div class="flex items-center">
+                    <span class="text-red-600 mr-2">⚠️</span>
+                    <div>
+                        <p class="text-red-700 font-medium">Critical Alerts Active</p>
+                        <p class="text-red-600 text-sm">1 MRL violation • 2 overdue withdrawal periods • 1 usage limit exceeded • 2 farmer assistance requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Active Prescriptions</h3>
+                    <p class="text-3xl font-bold text-blue-600">7</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Compliant Animals</h3>
+                    <p class="text-3xl font-bold text-green-600">8/11</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Withdrawal Periods</h3>
+                    <p class="text-3xl font-bold text-yellow-600">6 Active</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Farmers Monitored</h3>
+                    <p class="text-3xl font-bold text-purple-600">4</p>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Antimicrobial Usage & Prescription Records -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">💊</span>
+                        Antimicrobial Usage & Prescriptions
+                    </h2>
+                    <div class="space-y-4">
+                        <button onclick="openModal('newPrescriptionModal')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            New Prescription Entry
+                        </button>
+                        <button onclick="openModal('updateRecordModal')" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Update Existing Record
+                        </button>
+                        <div class="border-t pt-4">
+                            <h3 class="font-medium text-gray-800 mb-3">Recent Prescriptions</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-sm">COW-247 - Amoxicillin</span>
+                                    <span class="text-xs text-gray-500">2 hours ago</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-sm">PIG-156 - Oxytetracycline</span>
+                                    <span class="text-xs text-gray-500">4 hours ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animal Treatment Histories -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">📋</span>
+                        Animal Treatment Histories
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex space-x-2">
+                            <input type="text" placeholder="Enter Animal ID (e.g., COW-247)" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                            <button onclick="searchAnimalHistory()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">Search</button>
+                        </div>
+                        <div id="animalHistoryResults" class="hidden border rounded-lg p-4 bg-blue-50">
+                            <h3 class="font-medium text-blue-800 mb-2">Treatment History - COW-247</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Amoxicillin 500mg</span>
+                                    <span>Jan 15, 2024</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Penicillin 300mg</span>
+                                    <span>Dec 20, 2023</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Oxytetracycline 200mg</span>
+                                    <span>Nov 10, 2023</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdrawal Period Calculator -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">🧮</span>
+                        Withdrawal Period Calculator
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Medicine</label>
+                            <select id="withdrawalMedicine" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Medicine</option>
+                                <option value="7">Amoxicillin 500mg (7 days)</option>
+                                <option value="5">Oxytetracycline 200mg (5 days)</option>
+                                <option value="3">Penicillin 300mg (3 days)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Treatment Date</label>
+                                <input type="date" id="treatmentDate" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Duration (days)</label>
+                                <input type="number" id="treatmentDuration" placeholder="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <button onclick="calculateWithdrawal()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                            Calculate Safe Marketing Date
+                        </button>
+                        <div id="withdrawalResult" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+                            <p id="withdrawalText" class="text-green-700 font-medium"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Status -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">✅</span>
+                        Compliance Status
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="viewFarmCompliance()" class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                View Farm Status
+                            </button>
+                            <button onclick="viewAnimalCompliance()" class="bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors">
+                                View Animal Status
+                            </button>
+                        </div>
+                        <div class="border-t pt-4">
+                            <h3 class="font-medium text-gray-800 mb-3">Compliance Summary</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">FARMER-001</span>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Compliant</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">FARMER-002</span>
+                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Warning</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">FARMER-003</span>
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Non-Compliant</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Reports & Alerts -->
+    <div id="reports" class="page">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Reports & Alerts</h1>
+
+            <!-- Alert Banner -->
+            <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-8 alert-pulse">
+                <div class="flex items-center">
+                    <span class="text-red-600 mr-2">⚠️</span>
+                    <div>
+                        <p class="text-red-700 font-medium">Critical Alerts Active</p>
+                        <p class="text-red-600 text-sm">1 MRL violation • 2 overdue withdrawal periods • 1 usage limit exceeded • 2 farmer assistance requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Generate Treatment & Compliance Reports -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">📊</span>
+                        Generate Reports
+                    </h2>
+                    <div class="space-y-4">
+                        <button onclick="generateTreatmentReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Treatment Summary Report
+                        </button>
+                        <button onclick="generateComplianceReport()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Compliance Status Report
+                        </button>
+                        <button onclick="generateFarmerReport()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                            Farmer-Specific Report
+                        </button>
+                        <div class="border-t pt-4">
+                            <h3 class="font-medium text-gray-800 mb-3">Recent Reports</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-sm">Monthly Compliance - January</span>
+                                    <button class="text-blue-600 hover:text-blue-800 text-xs">Download</button>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-sm">Treatment Summary - Week 3</span>
+                                    <button class="text-blue-600 hover:text-blue-800 text-xs">Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts System -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">🚨</span>
+                        Active Alerts
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded">
+                            <h3 class="font-medium text-red-800">MRL Violation Detected</h3>
+                            <p class="text-sm text-red-700 mt-1">Sample LAB-1235 from FARMER-003 shows residue levels above maximum limits</p>
+                            <button onclick="handleAlert('mrl')" class="mt-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition-colors">Take Action</button>
+                        </div>
+                        <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded">
+                            <h3 class="font-medium text-yellow-800">Overdue Withdrawal Periods</h3>
+                            <p class="text-sm text-yellow-700 mt-1">2 animals have exceeded their withdrawal periods: COW-248, PIG-159</p>
+                            <button onclick="handleAlert('withdrawal')" class="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm transition-colors">Review Cases</button>
+                        </div>
+                        <div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
+                            <h3 class="font-medium text-orange-800">Usage Limit Exceeded</h3>
+                            <p class="text-sm text-orange-700 mt-1">FARMER-002 has exceeded monthly antimicrobial usage limits</p>
+                            <button onclick="handleAlert('usage')" class="mt-2 bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm transition-colors">Contact Farm</button>
+                        </div>
+                        <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded">
+                            <h3 class="font-medium text-blue-800">Farmer Assistance Request</h3>
+                            <p class="text-sm text-blue-700 mt-1">FARMER-001 requesting urgent assistance: "Cow showing respiratory symptoms, need treatment advice"</p>
+                            <button onclick="handleAlert('assistance')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">Send Solution</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base Access -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">📚</span>
+                        Knowledge Base
+                    </h2>
+                    <div class="space-y-3">
+                        <button onclick="openKnowledgeSection('regulations')" class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <h3 class="font-medium text-gray-800">Regulations & Guidelines</h3>
+                            <p class="text-sm text-gray-600 mt-1">Current regulatory requirements and compliance standards</p>
+                        </button>
+                        <button onclick="openKnowledgeSection('stewardship')" class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <h3 class="font-medium text-gray-800">Antimicrobial Stewardship</h3>
+                            <p class="text-sm text-gray-600 mt-1">Best practices for responsible antimicrobial use</p>
+                        </button>
+                        <button onclick="openKnowledgeSection('guidelines')" class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <h3 class="font-medium text-gray-800">Industry Guidelines</h3>
+                            <p class="text-sm text-gray-600 mt-1">Latest updates and recommendations from industry bodies</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lab Report Results -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">🔬</span>
+                        Lab Report Results
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left">Sample ID</th>
+                                        <th class="px-3 py-2 text-left">Farmer ID</th>
+                                        <th class="px-3 py-2 text-left">Status</th>
+                                        <th class="px-3 py-2 text-left">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-3 py-2">LAB-1234</td>
+                                        <td class="px-3 py-2">FARMER-001</td>
+                                        <td class="px-3 py-2">
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Clear</span>
+                                        </td>
+                                        <td class="px-3 py-2">
+                                            <button onclick="viewLabReport('LAB-1234')" class="text-blue-600 hover:text-blue-800 text-xs">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2">LAB-1235</td>
+                                        <td class="px-3 py-2">FARMER-003</td>
+                                        <td class="px-3 py-2">
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Violation</span>
+                                        </td>
+                                        <td class="px-3 py-2">
+                                            <button onclick="viewLabReport('LAB-1235')" class="text-blue-600 hover:text-blue-800 text-xs">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-3 py-2">LAB-1236</td>
+                                        <td class="px-3 py-2">FARMER-002</td>
+                                        <td class="px-3 py-2">
+                                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span>
+                                        </td>
+                                        <td class="px-3 py-2">
+                                            <button onclick="viewLabReport('LAB-1236')" class="text-blue-600 hover:text-blue-800 text-xs">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button onclick="openModal('labReportsModal')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
+                            View All Lab Reports
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Communication & Control -->
+    <div id="communication" class="page">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">Communication & Control</h1>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Communication with Farmers -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">💬</span>
+                        Farmer Alert System
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4 bg-red-50 border-red-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-medium text-gray-800">FARMER-001 Alert</h3>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Urgent</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3"><strong>Farmer Request:</strong> "Cow COW-251 showing severe respiratory symptoms, labored breathing, need immediate treatment advice"</p>
+                            <div class="flex space-x-2">
+                                <button onclick="sendSolutionAlert('FARMER-001', 'respiratory')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors">Send Solution Alert</button>
+                                <button onclick="scheduleVisit('FARMER-001')" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded text-sm transition-colors">Schedule Visit</button>
+                            </div>
+                        </div>
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-medium text-gray-800">FARMER-002 Alert</h3>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Assistance Needed</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3"><strong>Farmer Request:</strong> "Multiple pigs showing digestive issues, unsure about treatment protocol"</p>
+                            <div class="flex space-x-2">
+                                <button onclick="sendSolutionAlert('FARMER-002', 'digestive')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors">Send Solution Alert</button>
+                                <button onclick="requestMoreInfo('FARMER-002')" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-sm transition-colors">Request Details</button>
+                            </div>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-medium text-gray-800">FARM-003 Alert</h3>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Resolved</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-3"><strong>Solution Sent:</strong> Treatment protocol for sheep flock mastitis - Penicillin 300mg twice daily for 5 days</p>
+                            <button class="bg-gray-300 text-gray-500 px-3 py-2 rounded text-sm cursor-not-allowed">Completed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medicine Locking Mechanism -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">🔒</span>
+                        Medicine Control System
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 class="font-medium text-blue-800 mb-2">How Medicine Locking Works:</h3>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Medications are locked to specific animals</li>
+                                <li>• Farmers can only see medicines for designated animals</li>
+                                <li>• Cross-animal medication use is prevented</li>
+                                <li>• All prescriptions require vet approval to display</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-800 mb-3">Active Medicine Locks</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 locked-medicine rounded">
+                                    <div>
+                                        <span class="font-medium">COW-247</span>
+                                        <span class="text-sm text-gray-600 ml-2">Amoxicillin 500mg</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-red-600">🔒</span>
+                                        <button onclick="unlockMedicine('COW-247', 'Amoxicillin')" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors">Unlock</button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center p-3 locked-medicine rounded">
+                                    <div>
+                                        <span class="font-medium">PIG-156</span>
+                                        <span class="text-sm text-gray-600 ml-2">Oxytetracycline 200mg</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-red-600">🔒</span>
+                                        <button onclick="unlockMedicine('PIG-156', 'Oxytetracycline')" class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs transition-colors">Unlock</button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-green-50 border border-green-200 rounded">
+                                    <div>
+                                        <span class="font-medium">SHEEP-089</span>
+                                        <span class="text-sm text-gray-600 ml-2">Penicillin 300mg</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-green-600">🔓</span>
+                                        <button onclick="lockMedicine('SHEEP-089', 'Penicillin')" class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs transition-colors">Lock</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prescription Push System -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">📤</span>
+                        Prescription Management
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <h3 class="font-medium text-yellow-800 mb-2">Pending Approvals</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                    <div>
+                                        <span class="font-medium">COW-250</span>
+                                        <span class="text-sm text-gray-600 ml-2">Amoxicillin 500mg</span>
+                                        <div class="text-xs text-gray-500">FARM-001</div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="approvePrescription('COW-250')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors">Approve & Push</button>
+                                        <button onclick="rejectPrescription('COW-250')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">Reject</button>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                    <div>
+                                        <span class="font-medium">PIG-158</span>
+                                        <span class="text-sm text-gray-600 ml-2">Oxytetracycline 200mg</span>
+                                        <div class="text-xs text-gray-500">FARM-002</div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="approvePrescription('PIG-158')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors">Approve & Push</button>
+                                        <button onclick="rejectPrescription('PIG-158')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs transition-colors">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="openModal('newPrescriptionModal')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">
+                            Create New Prescription
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Farmer System Preview -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="mr-2">👨‍🌾</span>
+                        Farmer System Preview
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-800 mb-3">What Farmers See:</h3>
+                            <div class="space-y-2">
+                                <div class="bg-white border rounded p-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-medium">COW-247</span>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Available</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600 mt-1">Amoxicillin 500mg - Approved by Dr. Smith</div>
+                                    <div class="text-xs text-gray-500 mt-1">Dosage: 10ml twice daily for 5 days</div>
+                                </div>
+                                <div class="bg-gray-100 border rounded p-3 opacity-60">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-medium">COW-248</span>
+                                        <span class="bg-gray-300 text-gray-600 px-2 py-1 rounded-full text-xs">No Medications</span>
+                                    </div>
+                                    <div class="text-sm text-gray-500 mt-1">No approved medications for this animal</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p><strong>Note:</strong> Farmers can only see and administer medications that have been specifically approved and pushed to their system for each individual animal.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- New Prescription Modal -->
+    <div id="newPrescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">New Prescription</h2>
+                <button onclick="closeModal('newPrescriptionModal')" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <form class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Farmer ID</label>
+                        <input type="text" placeholder="e.g., FARMER-001" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Animal ID</label>
+                        <input type="text" placeholder="e.g., COW-251" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Medicine</label>
+                        <input type="text" placeholder="e.g., Amoxicillin 500mg" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dosage Instructions</label>
+                        <input type="text" placeholder="e.g., 10ml twice daily" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Treatment Duration (days)</label>
+                        <input type="number" placeholder="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Withdrawal Period (days)</label>
+                        <input type="number" placeholder="7" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Treatment Notes</label>
+                    <textarea rows="3" placeholder="Additional notes about the treatment..." class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="pushToFarmer" class="rounded" checked>
+                        <label for="pushToFarmer" class="text-sm font-medium text-gray-700">Push prescription to farmer system immediately</label>
+                    </div>
+                </div>
+                <div class="flex space-x-4 pt-4">
+                    <button type="button" onclick="savePrescription()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors">Save & Process</button>
+                    <button type="button" onclick="closeModal('newPrescriptionModal')" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 rounded-lg font-medium transition-colors">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lab Reports Modal -->
+    <div id="labReportsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Laboratory Reports</h2>
+                <button onclick="closeModal('labReportsModal')" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Sample ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Farm</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Animal ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Test Type</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Date</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-900">LAB-1234</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">FARM-001</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">COW-247</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">Antibiotic Residue</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">2024-01-20</td>
+                            <td class="px-4 py-3">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Clear</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <button onclick="viewDetailedLabReport('LAB-1234')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-900">LAB-1235</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">FARM-003</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">SHEEP-089</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">MRL Testing</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">2024-01-19</td>
+                            <td class="px-4 py-3">
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">MRL Violation</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <button onclick="viewDetailedLabReport('LAB-1235')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-900">LAB-1236</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">FARM-002</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">PIG-156</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">Routine Screening</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">2024-01-18</td>
+                            <td class="px-4 py-3">
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Pending</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <button onclick="viewDetailedLabReport('LAB-1236')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+            });
+            
+            event.target.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            event.target.classList.add('bg-blue-600', 'text-white');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById(modalId).classList.add('flex');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById(modalId).classList.remove('flex');
+        }
+
+        // Dashboard functions
+        function searchAnimalHistory() {
+            document.getElementById('animalHistoryResults').classList.remove('hidden');
+        }
+
+        function calculateWithdrawal() {
+            const medicine = document.getElementById('withdrawalMedicine').value;
+            const treatmentDate = document.getElementById('treatmentDate').value;
+            const duration = document.getElementById('treatmentDuration').value;
+            
+            if (!medicine || !treatmentDate || !duration) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const withdrawalDays = parseInt(medicine);
+            const start = new Date(treatmentDate);
+            const treatmentEnd = new Date(start);
+            treatmentEnd.setDate(treatmentEnd.getDate() + parseInt(duration));
+            
+            const safeDate = new Date(treatmentEnd);
+            safeDate.setDate(safeDate.getDate() + withdrawalDays);
+            
+            const resultDiv = document.getElementById('withdrawalResult');
+            const resultText = document.getElementById('withdrawalText');
+            
+            resultText.innerHTML = `Safe for marketing: ${safeDate.toLocaleDateString()} (${withdrawalDays} days after treatment completion on ${treatmentEnd.toLocaleDateString()})`;
+            
+            resultDiv.classList.remove('hidden');
+        }
+
+        function viewFarmCompliance() {
+            alert('Opening farm compliance dashboard with detailed status for all monitored farms');
+        }
+
+        function viewAnimalCompliance() {
+            alert('Opening individual animal compliance status with treatment histories and withdrawal periods');
+        }
+
+        // Reports & Alerts functions
+        function generateTreatmentReport() {
+            alert('Generating comprehensive treatment summary report. This will include all prescriptions, dosages, and treatment outcomes for the selected period.');
+        }
+
+        function generateComplianceReport() {
+            alert('Generating compliance status report. This will show regulatory adherence, withdrawal period compliance, and any violations detected.');
+        }
+
+        function generateFarmerReport() {
+            alert('Generating farmer-specific report. This will be formatted for sharing with farmers and include their treatment records and compliance status.');
+        }
+
+        function handleAlert(type) {
+            switch(type) {
+                case 'mrl':
+                    alert('Opening MRL violation details. Immediate action required: Contact farm, review treatment records, and implement corrective measures.');
+                    break;
+                case 'withdrawal':
+                    alert('Reviewing overdue withdrawal periods. Contacting affected farms and updating marketing restrictions.');
+                    break;
+                case 'usage':
+                    alert('Contacting farm about usage limit exceedance. Reviewing antimicrobial stewardship protocols.');
+                    break;
+            }
+        }
+
+        function openKnowledgeSection(section) {
+            const sections = {
+                'regulations': 'Opening current regulations and compliance guidelines including EU Regulation 2019/6 and local requirements.',
+                'stewardship': 'Accessing antimicrobial stewardship best practices, resistance prevention strategies, and responsible use guidelines.',
+                'guidelines': 'Viewing latest industry updates, treatment protocols, and professional recommendations.'
+            };
+            alert(sections[section]);
+        }
+
+        function viewLabReport(sampleId) {
+            alert(`Opening detailed lab report for sample ${sampleId} including test methodology, results, and regulatory implications.`);
+        }
+
+        function viewDetailedLabReport(sampleId) {
+            alert(`Viewing comprehensive lab report for ${sampleId} with full analysis, residue levels, and compliance assessment.`);
+        }
+
+        // Communication & Control functions
+        function sendSolutionAlert(farmerId, issueType) {
+            const solutions = {
+                'respiratory': 'Administer Amoxicillin 500mg twice daily for 5 days. Monitor temperature and breathing. Contact if no improvement in 48 hours.',
+                'digestive': 'Provide electrolyte solution and withhold feed for 12 hours. Administer Oxytetracycline 200mg once daily for 3 days if symptoms persist.'
+            };
+            alert(`Solution alert sent to ${farmerId}: "${solutions[issueType]}"`);
+        }
+
+        function requestMoreInfo(farmerId) {
+            alert(`Information request sent to ${farmerId}. Asking for detailed symptoms, affected animal count, and duration of issues.`);
+        }
+
+        function respondToFarmer(farmName, action) {
+            if (action === 'verify') {
+                alert(`Prescription verified and approved for ${farmName}. Medicine has been unlocked and pushed to farmer's system.`);
+            } else {
+                const message = prompt(`Send message to ${farmName}:`);
+                if (message) {
+                    alert(`Message sent to ${farmName}: "${message}"`);
+                }
+            }
+        }
+
+        function provideAdvice(farmName) {
+            alert(`Opening advice consultation for ${farmName}. Providing treatment recommendations based on symptoms and farm history.`);
+        }
+
+        function scheduleVisit(farmName) {
+            alert(`Scheduling on-site visit to ${farmName}. Calendar integration will be opened to select available dates.`);
+        }
+
+        function unlockMedicine(animalId, medicine) {
+            if (confirm(`Unlock ${medicine} for ${animalId}? This will allow the farmer to administer the medication.`)) {
+                alert(`${medicine} unlocked for ${animalId}. Farmer has been notified and can now administer the medication.`);
+            }
+        }
+
+        function lockMedicine(animalId, medicine) {
+            if (confirm(`Lock ${medicine} for ${animalId}? This will prevent the farmer from administering this medication.`)) {
+                alert(`${medicine} locked for ${animalId}. Farmer access has been restricted.`);
+            }
+        }
+
+        function approvePrescription(animalId) {
+            alert(`Prescription approved for ${animalId}. Medicine has been locked to this animal and pushed to the farmer's system. The farmer can now see and administer this medication only for ${animalId}.`);
+        }
+
+        function rejectPrescription(animalId) {
+            const reason = prompt(`Reason for rejecting prescription for ${animalId}:`);
+            if (reason) {
+                alert(`Prescription rejected for ${animalId}. Reason: "${reason}". Farmer has been notified.`);
+            }
+        }
+
+        function savePrescription() {
+            alert('Prescription saved successfully! The medicine has been locked to the specified animal and pushed to the farmer\'s system. The farmer will only see this medication under the designated animal\'s treatment options.');
+            closeModal('newPrescriptionModal');
+        }
+
+        // Set default date
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const treatmentDateInput = document.getElementById('treatmentDate');
+            if (treatmentDateInput) {
+                treatmentDateInput.value = today;
+            }
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('fixed') && event.target.classList.contains('bg-black')) {
+                const modals = ['newPrescriptionModal', 'labReportsModal'];
+                modals.forEach(modalId => {
+                    if (!document.getElementById(modalId).classList.contains('hidden')) {
+                        closeModal(modalId);
+                    }
+                });
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'980a97d8540184b3',t:'MTc1ODEzMjk3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
